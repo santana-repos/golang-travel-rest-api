@@ -20,7 +20,7 @@ SCL,ORL,20
 Caso desejemos viajar de **GRU** para **CDG** existem as seguintes rotas:
 
 1. GRU - BRC - SCL - ORL - CDG ao custo de **$40**
-2. GRU - ORL - CGD ao custo de **$64**
+2. GRU - ORL - CDG ao custo de **$64**
 3. GRU - CDG ao custo de **$75**
 4. GRU - SCL - ORL - CDG ao custo de **$45**
 
@@ -38,9 +38,9 @@ Duas interfaces de consulta devem ser implementadas:
   Exemplo:
   
 ```shell
-please enter the route: GRU-CGD
+please enter the route: GRU-CDG
 best route: GRU - BRC - SCL - ORL - CDG > $40
-please enter the route: BRC-CDG
+please enter the route: BRC-ORL
 best route: BRC - ORL > $30
 ```
 

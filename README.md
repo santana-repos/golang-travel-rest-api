@@ -41,7 +41,7 @@ Duas interfaces de consulta devem ser implementadas:
 please enter the route: GRU-CDG
 best route: GRU - BRC - SCL - ORL - CDG > $40
 please enter the route: BRC-ORL
-best route: BRC - ORL > $30
+best route: BRC - SCL - ORL > $25
 ```
 
 - Interface Rest

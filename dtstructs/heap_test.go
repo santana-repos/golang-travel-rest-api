@@ -52,11 +52,11 @@ func TestPushAndPopGRUBRCRouteFromTheHeap(t *testing.T) {
 	}
 
 	// expected to take the route with minor price
-	gottedRoute := heap.Pop()
-	if (gottedRoute.Price != 10) && (gottedRoute.Nodes[0] != "GRU") && (gottedRoute.Nodes[1] != "BRC") {
+	gottemRoute := heap.Pop()
+	if (gottemRoute.Price != 10) && (gottemRoute.Nodes[0] != "GRU") && (gottemRoute.Nodes[1] != "BRC") {
 		t.Errorf("got %v, wanted {10 [GRU BRC]}", got)
 	}
-	fmt.Printf("Removed Route: %v", gottedRoute)
+	fmt.Printf("Removed Route: %v", gottemRoute)
 
 	want = 1
 	got = heap.Len()

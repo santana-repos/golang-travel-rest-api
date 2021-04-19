@@ -61,13 +61,13 @@ func main() {
 		fmt.Printf("\nproximo: %v\n", melhorRota)
 	*/
 	graph := dtstructs.NewGraph()
-	graph.AddStretch("GRU", "BRC", 10)
-	graph.AddStretch("BRC", "SCL", 5)
-	graph.AddStretch("GRU", "CDG", 75)
-	graph.AddStretch("GRU", "SCL", 20)
-	graph.AddStretch("GRU", "ORL", 56)
-	graph.AddStretch("ORL", "CDG", 5)
-	graph.AddStretch("SCL", "ORL", 20)
+	graph.AddEdge("GRU", "BRC", 10)
+	graph.AddEdge("BRC", "SCL", 5)
+	graph.AddEdge("GRU", "CDG", 75)
+	graph.AddEdge("GRU", "SCL", 20)
+	graph.AddEdge("GRU", "ORL", 56)
+	graph.AddEdge("ORL", "CDG", 5)
+	graph.AddEdge("SCL", "ORL", 20)
 
 	fmt.Printf("\nRotas: %v\n", graph)
 

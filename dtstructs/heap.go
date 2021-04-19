@@ -1,5 +1,8 @@
 package dtstructs
 
+// Implementação customizada de Árvore Heap p/ tratar
+// para representar as rotas entre os aeroportos
+
 import (
 	hp "container/heap" // importa a implementação padrão de Árvore Heap do Golang
 )
@@ -40,6 +43,9 @@ type heap struct {
 	prices *minorPriceRoute
 }
 
+// NewHeap constructs Heap that encapsulates and abstracts
+// the internal function of the heap. It only exposes the
+// Push and Pop function
 func NewHeap() *heap {
 	return &heap{prices: &minorPriceRoute{}}
 }
@@ -52,4 +58,8 @@ func (h *heap) Pop() Route {
 	i := hp.Pop(h.prices)
 
 	return i.(Route)
+}
+
+func (h heap) Len() int {
+	return h.prices.Len()
 }

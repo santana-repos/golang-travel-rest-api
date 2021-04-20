@@ -5,18 +5,18 @@ import "travelling-routes/csv"
 // Reference: https://softwareengineering.stackexchange.com/a/273372
 
 // set implementation for small number of items
-type CSVRouteSet struct {
-	slice []csv.CSVroute
+type routeSet struct {
+	slice []csv.RouteData
 }
 
 // functions
-func (set *CSVRouteSet) Add(p csv.CSVroute) {
+func (set *routeSet) Add(p csv.RouteData) {
 	if !set.Contains(p) {
 		set.slice = append(set.slice, p)
 	}
 }
 
-func (set CSVRouteSet) Contains(p csv.CSVroute) bool {
+func (set routeSet) Contains(p csv.RouteData) bool {
 	for _, v := range set.slice {
 		if v.Equals(p) {
 			return true
@@ -25,10 +25,14 @@ func (set CSVRouteSet) Contains(p csv.CSVroute) bool {
 	return false
 }
 
-func (set CSVRouteSet) NumElements() int {
+func (set routeSet) NumElements() int {
 	return len(set.slice)
 }
 
-func NewCSVRouteSet() CSVRouteSet {
-	return CSVRouteSet{(make([]csv.CSVroute, 0, 10))}
+func (set routeSet) GetItems() []csv.RouteData {
+	return set.slice
+}
+
+func NewCSVRouteSet() routeSet {
+	return routeSet{(make([]csv.RouteData, 0, 10))}
 }

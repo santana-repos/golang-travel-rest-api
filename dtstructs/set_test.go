@@ -10,7 +10,7 @@ func TestCSVRouteSet(t *testing.T) {
 	want := 1
 
 	set := NewCSVRouteSet()
-	route := csv.CSVroute{Origin: "GRU", Destination: "BRC", Cost: float32(10)}
+	route := csv.RouteData{Origin: "GRU", Destination: "BRC", Cost: float32(10)}
 	set.Add(route)
 	set.Add(route)
 	set.Add(route)
@@ -26,4 +26,12 @@ func TestCSVRouteSet(t *testing.T) {
 	}
 
 	log.Printf("Set: %v", set)
+
+	want3 := make([]csv.RouteData, 0, 1)
+	want3 = append(want3, route)
+
+	got3 := set.GetItems()
+	if !equal(got3, want3) {
+		t.Errorf("got: %v; wantted: %v", got3, want3)
+	}
 }

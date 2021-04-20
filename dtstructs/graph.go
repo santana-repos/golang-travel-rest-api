@@ -1,7 +1,6 @@
 package dtstructs
 
 import (
-	"fmt"
 	"sort"
 	"travelling-routes/csv"
 )
@@ -18,7 +17,8 @@ type edge struct {
 }
 
 type Graph struct {
-	nodes map[string][]edge
+	nodes    map[string][]edge
+	routeset routeSet
 }
 
 // NewGraph constructs a Graph to holds the representation of the airports
@@ -28,8 +28,9 @@ type Graph struct {
 // Moreover, the graph offers the GetMinorPriceRoute function that
 // receive two airports as origin and destiny parameters to return
 // the minor price route to achieve the destination from the origin airport.
+// It also initialize the Route Set
 func NewGraph() *Graph {
-	return &Graph{nodes: make(map[string][]edge)}
+	return &Graph{nodes: make(map[string][]edge), routeset: NewCSVRouteSet()}
 }
 
 // AddEdge It offers the AddEdge function to help us to add two Nodes (origin
@@ -37,6 +38,8 @@ func NewGraph() *Graph {
 func (g *Graph) AddEdge(origin, destiny string, cost float32) {
 	g.nodes[origin] = append(g.nodes[origin], edge{node: destiny, cost: cost})
 	g.nodes[destiny] = append(g.nodes[destiny], edge{node: origin, cost: cost})
+
+	g.routeset.Add(csv.RouteData{Origin: origin, Destination: destiny, Cost: cost})
 }
 
 func (g *Graph) getEdge(node string) []edge {
@@ -110,17 +113,8 @@ func (g *Graph) Exists(airportName string) bool {
 	return exists
 }
 
-func GetGraphAllRoutes(graph *Graph) ([]csv.CSVroute, error) {
-	result := make([]csv.CSVroute, 0, 10)
+func (g *Graph) GetGraphAllRoutes() *[]csv.RouteData {
+	routes := g.routeset.GetItems()
 
-	//set := make(map[csv.CSVroute]bool)
-	for key, values := range graph.nodes {
-		fmt.Printf("\n key: %v; values: %v", key, values)
-		//set[csv.CSVroute{Origin: key, Destination: values, Price: values.cost}] = true // Add
-	}
-
-	/*for k, v := range graph.nodes {
-	}*/
-
-	return result, nil
+	return &routes
 }

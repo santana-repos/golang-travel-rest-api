@@ -7,7 +7,9 @@ import (
 	"travelling-routes/dtstructs"
 )
 
-func BuildGraphFromCSV(filepath string) (*dtstructs.Graph, error) {
+type Business struct{}
+
+func (b Business) BuildGraphFromCSV(filepath string) (*dtstructs.Graph, error) {
 
 	graph := dtstructs.NewGraph()
 
@@ -28,35 +30,15 @@ func BuildGraphFromCSV(filepath string) (*dtstructs.Graph, error) {
 	return graph, err
 }
 
-func UpdateCSVfromGraph(filepath string, graph *dtstructs.Graph) error {
+func (b Business) UpdateCSVfromGraph(filepath string, graph *dtstructs.Graph) error {
 
-	//csvroutes := make([]csv.CSVroute, 0, 10)
+	err := csv.WriteCsv(filepath, *graph.GetGraphAllRoutes(), false)
 
-	/*
-		for _,
-
-		graph := dtstructs.NewGraph()
-
-		lines, err := csv.LoadCSVlines(filepath)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, line := range lines {
-			price, err := strconv.ParseFloat(line[2], 32)
-			if err != nil {
-				return nil, err
-			}
-
-			graph.AddEdge(line[0], line[1], float32(price))
-		}
-	*/
-
-	return nil
+	return err
 }
 
-func RetrieveMinorCostRouteFromCSV(filepath string, origin string, destination string) (float32, []string, error) {
-	graph, err := BuildGraphFromCSV(filepath)
+func (b Business) RetrieveMinorCostRouteFromCSV(filepath string, origin string, destination string) (float32, []string, error) {
+	graph, err := b.BuildGraphFromCSV(filepath)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -68,4 +50,8 @@ func RetrieveMinorCostRouteFromCSV(filepath string, origin string, destination s
 	cost, route := graph.GetMinorCostRoute(origin, destination)
 
 	return cost, route, nil
+}
+
+func NewBusiness() Business {
+	return Business{}
 }

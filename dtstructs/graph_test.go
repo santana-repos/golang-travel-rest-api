@@ -8,7 +8,7 @@ import (
 	"travelling-routes/utils"
 )
 
-func equal(a, b []csv.CSVroute) bool {
+func equal(a, b []csv.RouteData) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -107,24 +107,21 @@ func TestFindAirportNameIsValid(t *testing.T) {
 }
 
 func TestGetGraphAllRoutes(t *testing.T) {
-	want := make([]csv.CSVroute, 0, 10)
-	want = append(want, csv.CSVroute{Origin: "GRU", Destination: "BRC", Cost: float32(10)})
-	want = append(want, csv.CSVroute{Origin: "BRC", Destination: "SCL", Cost: float32(5)})
-	want = append(want, csv.CSVroute{Origin: "GRU", Destination: "CDG", Cost: float32(75)})
-	want = append(want, csv.CSVroute{Origin: "GRU", Destination: "SCL", Cost: float32(20)})
-	want = append(want, csv.CSVroute{Origin: "GRU", Destination: "ORL", Cost: float32(56)})
-	want = append(want, csv.CSVroute{Origin: "ORL", Destination: "CDG", Cost: float32(5)})
-	want = append(want, csv.CSVroute{Origin: "SCL", Destination: "ORL", Cost: float32(20)})
+	want := make([]csv.RouteData, 0, 10)
+	want = append(want, csv.RouteData{Origin: "GRU", Destination: "BRC", Cost: float32(10)})
+	want = append(want, csv.RouteData{Origin: "BRC", Destination: "SCL", Cost: float32(5)})
+	want = append(want, csv.RouteData{Origin: "GRU", Destination: "CDG", Cost: float32(75)})
+	want = append(want, csv.RouteData{Origin: "GRU", Destination: "SCL", Cost: float32(20)})
+	want = append(want, csv.RouteData{Origin: "GRU", Destination: "ORL", Cost: float32(56)})
+	want = append(want, csv.RouteData{Origin: "ORL", Destination: "CDG", Cost: float32(5)})
+	want = append(want, csv.RouteData{Origin: "SCL", Destination: "ORL", Cost: float32(20)})
 
 	graph := buildBaseGraph()
 
-	got, err := GetGraphAllRoutes(graph)
-	if err != nil {
-		t.Errorf("got error: [%v]; wannted: [%v]", err, want)
-	}
+	got := graph.GetGraphAllRoutes()
 
-	if !equal(got, want) {
-		t.Errorf("got error: [%v]; wannted: [%v]", err, want)
+	if !equal(*got, want) {
+		t.Errorf("got: [%v]; wannted: [%v]", got, want)
 	}
 
 }

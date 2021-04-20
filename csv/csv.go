@@ -2,16 +2,17 @@ package csv
 
 import (
 	"encoding/csv"
+	"fmt"
 	"os"
 )
 
-type CSVroute struct {
+type RouteData struct {
 	Origin      string
 	Destination string
 	Cost        float32
 }
 
-func (p1 CSVroute) Equals(p2 CSVroute) bool {
+func (p1 RouteData) Equals(p2 RouteData) bool {
 	return (p1.Origin == p2.Origin) && (p1.Destination == p2.Destination) && (p1.Cost == p2.Cost)
 }
 
@@ -44,4 +45,38 @@ func ReadCsv(filename string) ([][]string, error) {
 	}
 
 	return lines, nil
+}
+
+// reference: https://golang.org/pkg/encoding/csv/#example_Writer
+func WriteCsv(filename string, routeData []RouteData, fakeWrite bool) error {
+
+	var writer *csv.Writer
+	if fakeWrite {
+		writer = csv.NewWriter(os.Stdout)
+	} else {
+		// Write CSV file
+		file, err := os.Create(filename)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		writer = csv.NewWriter(file)
+	}
+
+	for _, route := range routeData {
+		record := []string{route.Origin, route.Destination, fmt.Sprintf("%.2f", route.Cost)}
+		if err := writer.Write(record); err != nil {
+			return fmt.Errorf("error writing record to csv: %v", err)
+		}
+	}
+
+	// Write any buffered data to the underlying writer (standard output).
+	writer.Flush()
+
+	if err := writer.Error(); err != nil {
+		return fmt.Errorf("unnexpected error: %v", err)
+	}
+
+	return nil
 }

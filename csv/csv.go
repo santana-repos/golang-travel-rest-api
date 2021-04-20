@@ -12,14 +12,14 @@ type CSVroute struct {
 	Price       float32
 }
 
-func LoadCSVroutes() ([]CSVroute, error) {
+func LoadCSVroutes(filepath string) ([]CSVroute, error) {
 
 	routes := make([]CSVroute, 0, 20)
 
-	lines, err := ReadCsv("../input-routes.csv")
+	lines, err := ReadCsv(filepath)
 	if err != nil {
-		//panic(err)
-		return nil, err
+		panic(err)
+		//return nil, err
 	}
 
 	// Loop through lines & turn into object
@@ -40,6 +40,16 @@ func LoadCSVroutes() ([]CSVroute, error) {
 	}
 
 	return routes, nil
+}
+
+func LoadCSVlines(filepath string) [][]string {
+	lines, err := ReadCsv(filepath)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return lines
 }
 
 // ReadCsv accepts a file and returns its content as a multi-dimentional type

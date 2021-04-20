@@ -2,64 +2,34 @@ package main
 
 import (
 	"fmt"
-	"travelling-routes/dtstructs"
+	"log"
+	"net/http"
 )
 
-type Caminho struct {
-	Origem    int
-	Destino   int
-	Distancia int
-}
-type Local struct {
-	Codigo    int
-	Sigla     string
-	Descricao string
-}
-
-type Vertice struct {
-	Local          Local
-	MenorDistancia int
-}
-
 func main() {
-	fmt.Println("hello Traveller o/")
+	http.HandleFunc("/cli/GetMinorPriceRoute", handler)
 
-	//caminhos := make([]Caminho, 0, 3)
-	/*
-		caminho1 := new(Caminho)
-		caminho1.Trecho = "ITAP-BARUERI"
-		caminho1.Distancia = 60
-		caminhos = append(caminhos, *caminho1)
-	*/
-	/*
-		local_GRU := Local{Codigo: 0, Sigla: "GRU", Descricao: "Aeroporto de Guarulhos-BRASIL"}
-		local_BRC := Local{Codigo: 1, Sigla: "BRC", Descricao: "Aeroporto San Carlos de Bariloche-ARGENTINA"}
-		local_SLC := Local{Codigo: 2, Sigla: "SLC", Descricao: "Aeroporto Arturo Merino Benítez-CHILE"}
-		local_CDG := Local{Codigo: 3, Sigla: "CDG", Descricao: "Aeroporto Charles de Gaulle-FRANÇA"}
-		//local_ORL := Local{Codigo: 4, Sigla: "ORL", Descricao: "Aeroporto Orlando Executive-ESTADOS UNIDOS"}
+	fmt.Printf("Starting server at port 8080\n")
+	log.Fatal(http.ListenAndServe("localhost:8080", nil))
+}
 
+func handler(w http.ResponseWriter, r *http.Request) {
 
-		caminhos = append(caminhos, Caminho{Origem: local_GRU.Codigo, Destino: local_SLC.Codigo, Distancia: 60})
-		caminhos = append(caminhos, Caminho{Origem: local_GRU.Codigo, Destino: local_BRC.Codigo, Distancia: 30})
-		caminhos = append(caminhos, Caminho{Origem: local_SLC.Codigo, Destino: local_CDG.Codigo, Distancia: 20})
-		caminhos = append(caminhos, Caminho{Origem: local_BRC.Codigo, Destino: local_SLC.Codigo, Distancia: 20})
+	fmt.Printf("\nRecebi request do Client CLI: \n%v", r)
 
-		fmt.Printf("\nCaminhos: %v\n", caminhos)
+	keys, ok := r.URL.Query()["name"]
 
-		melhorRota := make([]Caminho, 0, 2)
+	name := "guest"
 
-		locaisVisitados := make([]int,0,10)
-		locaisNaoVisitados := make([]int,0,10)
+	if ok {
 
-		locaisNaoVisitados = append(locaisNaoVisitados, local_GRU.Codigo)
-		locaisNaoVisitados = append(locaisNaoVisitados, local_BRC.Codigo)
-		locaisNaoVisitados = append(locaisNaoVisitados, local_SLC.Codigo)
-		locaisNaoVisitados = append(locaisNaoVisitados, local_CDG.Codigo)
+		name = keys[0]
+	}
 
-		VerticeDeVisitas :=
+	fmt.Fprintf(w, "Hello %s!", name)
+}
 
-		fmt.Printf("\nproximo: %v\n", melhorRota)
-	*/
+/*
 	graph := dtstructs.NewGraph()
 	graph.AddEdge("GRU", "BRC", 10)
 	graph.AddEdge("BRC", "SCL", 5)
@@ -73,5 +43,4 @@ func main() {
 
 	fmt.Println(graph.GetMinorPriceRoute("GRU", "CDG"))
 	fmt.Println(graph.GetMinorPriceRoute("BRC", "ORL"))
-
-}
+*/

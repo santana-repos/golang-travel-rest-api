@@ -1,5 +1,7 @@
 package dtstructs
 
+import "sort"
+
 // Implementação de Grafo para organizar os trechos
 // das rotas dos aeroportos e seus correspondentes custos.
 // Através desse Grafo os trechos de viagens são representados
@@ -37,12 +39,12 @@ func (g *graph) getEdge(node string) []edge {
 	return g.nodes[node]
 }
 
-// GetMinorPriceRoute function that receive two airports as origin and destiny
+// GetMinorCostRoute function that receive two airports as origin and destiny
 // parameters to return the minor price route to achieve the destination (destiny
 // as string) from the origin (origin as string) airport.
 // This functions implements the Dijkstra's algorithm as strategy to find
 // the minor price route from origin to destiny.
-func (g *graph) GetMinorPriceRoute(origin, destiny string) (float32, []string) {
+func (g *graph) GetMinorCostRoute(origin, destiny string) (float32, []string) {
 	heap := NewHeap()
 	heap.Push(Route{Price: float32(0), Nodes: []string{origin}})
 	visited := make(map[string]bool)
@@ -71,4 +73,35 @@ func (g *graph) GetMinorPriceRoute(origin, destiny string) (float32, []string) {
 	}
 
 	return 0, nil
+}
+
+func (g *graph) GetAllAirportsCodes(sortItens bool) []string {
+	keys := make([]string, 0, len(g.nodes))
+	for k := range g.nodes {
+		keys = append(keys, k)
+	}
+
+	if sortItens {
+		sort.Strings(keys)
+	}
+
+	return keys
+}
+
+func (g *graph) Exists(airportName string) bool {
+	exists := false
+
+	if len(airportName) < 3 {
+		return exists
+	}
+
+	airportNames := g.GetAllAirportsCodes(false)
+
+	for _, name := range airportNames {
+		if name == airportName {
+			exists = true
+		}
+	}
+
+	return exists
 }

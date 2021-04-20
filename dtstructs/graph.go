@@ -1,6 +1,10 @@
 package dtstructs
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+	"travelling-routes/csv"
+)
 
 // Implementação de Grafo para organizar os trechos
 // das rotas dos aeroportos e seus correspondentes custos.
@@ -13,7 +17,7 @@ type edge struct {
 	cost float32
 }
 
-type graph struct {
+type Graph struct {
 	nodes map[string][]edge
 }
 
@@ -24,18 +28,18 @@ type graph struct {
 // Moreover, the graph offers the GetMinorPriceRoute function that
 // receive two airports as origin and destiny parameters to return
 // the minor price route to achieve the destination from the origin airport.
-func NewGraph() *graph {
-	return &graph{nodes: make(map[string][]edge)}
+func NewGraph() *Graph {
+	return &Graph{nodes: make(map[string][]edge)}
 }
 
 // AddEdge It offers the AddEdge function to help us to add two Nodes (origin
 // and destiny as Strings) and an Edge (cost as Float32) between them.
-func (g *graph) AddEdge(origin, destiny string, cost float32) {
+func (g *Graph) AddEdge(origin, destiny string, cost float32) {
 	g.nodes[origin] = append(g.nodes[origin], edge{node: destiny, cost: cost})
 	g.nodes[destiny] = append(g.nodes[destiny], edge{node: origin, cost: cost})
 }
 
-func (g *graph) getEdge(node string) []edge {
+func (g *Graph) getEdge(node string) []edge {
 	return g.nodes[node]
 }
 
@@ -44,7 +48,7 @@ func (g *graph) getEdge(node string) []edge {
 // as string) from the origin (origin as string) airport.
 // This functions implements the Dijkstra's algorithm as strategy to find
 // the minor price route from origin to destiny.
-func (g *graph) GetMinorCostRoute(origin, destiny string) (float32, []string) {
+func (g *Graph) GetMinorCostRoute(origin, destiny string) (float32, []string) {
 	heap := NewHeap()
 	heap.Push(Route{Price: float32(0), Nodes: []string{origin}})
 	visited := make(map[string]bool)
@@ -75,7 +79,7 @@ func (g *graph) GetMinorCostRoute(origin, destiny string) (float32, []string) {
 	return 0, nil
 }
 
-func (g *graph) GetAllAirportsCodes(sortItens bool) []string {
+func (g *Graph) GetAllAirportsCodes(sortItens bool) []string {
 	keys := make([]string, 0, len(g.nodes))
 	for k := range g.nodes {
 		keys = append(keys, k)
@@ -88,7 +92,7 @@ func (g *graph) GetAllAirportsCodes(sortItens bool) []string {
 	return keys
 }
 
-func (g *graph) Exists(airportName string) bool {
+func (g *Graph) Exists(airportName string) bool {
 	exists := false
 
 	if len(airportName) < 3 {
@@ -104,4 +108,19 @@ func (g *graph) Exists(airportName string) bool {
 	}
 
 	return exists
+}
+
+func GetGraphAllRoutes(graph *Graph) ([]csv.CSVroute, error) {
+	result := make([]csv.CSVroute, 0, 10)
+
+	//set := make(map[csv.CSVroute]bool)
+	for key, values := range graph.nodes {
+		fmt.Printf("\n key: %v; values: %v", key, values)
+		//set[csv.CSVroute{Origin: key, Destination: values, Price: values.cost}] = true // Add
+	}
+
+	/*for k, v := range graph.nodes {
+	}*/
+
+	return result, nil
 }

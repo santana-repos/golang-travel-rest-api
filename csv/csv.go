@@ -3,53 +3,26 @@ package csv
 import (
 	"encoding/csv"
 	"os"
-	"strconv"
 )
 
 type CSVroute struct {
 	Origin      string
 	Destination string
-	Price       float32
+	Cost        float32
 }
 
-func LoadCSVroutes(filepath string) ([]CSVroute, error) {
-
-	routes := make([]CSVroute, 0, 20)
-
-	lines, err := ReadCsv(filepath)
-	if err != nil {
-		panic(err)
-		//return nil, err
-	}
-
-	// Loop through lines & turn into object
-	for _, line := range lines {
-
-		price, err := strconv.ParseFloat(line[2], 32)
-		if err != nil {
-			return nil, err
-		}
-
-		data := CSVroute{
-			Origin:      line[0],
-			Destination: line[1],
-			Price:       float32(price),
-		}
-
-		routes = append(routes, data)
-	}
-
-	return routes, nil
+func (p1 CSVroute) Equals(p2 CSVroute) bool {
+	return (p1.Origin == p2.Origin) && (p1.Destination == p2.Destination) && (p1.Cost == p2.Cost)
 }
 
-func LoadCSVlines(filepath string) [][]string {
+func LoadCSVlines(filepath string) ([][]string, error) {
 	lines, err := ReadCsv(filepath)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return lines
+	return lines, nil
 }
 
 // ReadCsv accepts a file and returns its content as a multi-dimentional type

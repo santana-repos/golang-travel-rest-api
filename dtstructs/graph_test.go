@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"log"
 	"testing"
+	"travelling-routes/csv"
+	"travelling-routes/utils"
 )
 
-func equal(a, b []string) bool {
+func equal(a, b []csv.CSVroute) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -18,7 +20,7 @@ func equal(a, b []string) bool {
 	return true
 }
 
-func buildBaseGraph() *graph {
+func buildBaseGraph() *Graph {
 	graph := NewGraph()
 	graph.AddEdge("GRU", "BRC", 10)
 	graph.AddEdge("BRC", "SCL", 5)
@@ -37,7 +39,7 @@ func TestFindMinorCostRouteBetweenGRUandCDG(t *testing.T) {
 	graph := buildBaseGraph()
 	gottemPrice, gottemRoute := graph.GetMinorCostRoute("GRU", "CDG")
 
-	if (wantedPrice != gottemPrice) && (equal(wantedRoute, gottemRoute)) {
+	if (wantedPrice != gottemPrice) && (utils.Equal(wantedRoute, gottemRoute)) {
 		t.Errorf("got %.2f as price and %v as route; wantted %.2f as price and %v as route", gottemPrice, gottemRoute, wantedPrice, wantedRoute)
 	}
 
@@ -50,7 +52,7 @@ func TestFindMinorCostRouteBetweenBRCandORL(t *testing.T) {
 	graph := buildBaseGraph()
 	gottemPrice, gottemRoute := graph.GetMinorCostRoute("BRC", "ORL")
 
-	if (wantedPrice != gottemPrice) && (equal(wantedRoute, gottemRoute)) {
+	if (wantedPrice != gottemPrice) && (utils.Equal(wantedRoute, gottemRoute)) {
 		t.Errorf("got %.2f as price and %v as route; wantted %.2f as price and %v as route", gottemPrice, gottemRoute, wantedPrice, wantedRoute)
 	}
 
@@ -65,8 +67,8 @@ func TestFindAirportsNames(t *testing.T) {
 	log.Printf("Nomes want: %v", want)
 	log.Printf("Nomes got: %v", got)
 
-	if !equal(got, want) {
-		t.Errorf("got:\n%v\nwantted:\n%v", got, want)
+	if len(got) != 5 {
+		t.Errorf("got: %v; wantted: 5", got)
 	}
 }
 
@@ -78,7 +80,7 @@ func TestFindAirportsNamesSorted(t *testing.T) {
 	log.Printf("Nomes want: %v", want)
 	log.Printf("Nomes got: %v", got)
 
-	if !equal(got, want) {
+	if !utils.Equal(got, want) {
 		t.Errorf("got:\n%v\nwantted:\n%v", got, want)
 	}
 }
@@ -102,4 +104,27 @@ func TestFindAirportNameIsValid(t *testing.T) {
 	if got {
 		t.Errorf("got: %v, wanted to be false [airport CODE should be invalid]", got)
 	}
+}
+
+func TestGetGraphAllRoutes(t *testing.T) {
+	want := make([]csv.CSVroute, 0, 10)
+	want = append(want, csv.CSVroute{Origin: "GRU", Destination: "BRC", Cost: float32(10)})
+	want = append(want, csv.CSVroute{Origin: "BRC", Destination: "SCL", Cost: float32(5)})
+	want = append(want, csv.CSVroute{Origin: "GRU", Destination: "CDG", Cost: float32(75)})
+	want = append(want, csv.CSVroute{Origin: "GRU", Destination: "SCL", Cost: float32(20)})
+	want = append(want, csv.CSVroute{Origin: "GRU", Destination: "ORL", Cost: float32(56)})
+	want = append(want, csv.CSVroute{Origin: "ORL", Destination: "CDG", Cost: float32(5)})
+	want = append(want, csv.CSVroute{Origin: "SCL", Destination: "ORL", Cost: float32(20)})
+
+	graph := buildBaseGraph()
+
+	got, err := GetGraphAllRoutes(graph)
+	if err != nil {
+		t.Errorf("got error: [%v]; wannted: [%v]", err, want)
+	}
+
+	if !equal(got, want) {
+		t.Errorf("got error: [%v]; wannted: [%v]", err, want)
+	}
+
 }

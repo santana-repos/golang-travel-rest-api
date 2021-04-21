@@ -37,12 +37,7 @@ func (b Business) UpdateCSVfromGraph(filepath string, graph *dtstructs.Graph) er
 	return err
 }
 
-func (b Business) RetrieveMinorCostRouteFromCSV(filepath string, origin string, destination string) (float32, []string, error) {
-	graph, err := b.BuildGraphFromCSV(filepath)
-	if err != nil {
-		return 0, nil, err
-	}
-
+func (b Business) RetrieveMinorCostRouteFromCSV(graph *dtstructs.Graph, origin string, destination string) (float32, []string, error) {
 	/*
 		log.Printf("#%v#", graph)
 		log.Printf("#%s#", origin)

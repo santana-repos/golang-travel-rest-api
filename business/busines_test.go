@@ -13,8 +13,12 @@ func TestFindMinorCostRouteBetweenGRUandCDGFromCSVFile(t *testing.T) {
 	wantedPrice, wantedRoute := float32(40), []string{"GRU", "BRC", "SCL", "ORL", "CDG"}
 
 	b := Business{}
+	graph, err := b.BuildGraphFromCSV("../input-routes.csv")
+	if err != nil {
+		utils.ExitGracefully(err)
+	}
 
-	gottemPrice, gottemRoute, err := b.RetrieveMinorCostRouteFromCSV("../input-routes.csv", "GRU", "CDG")
+	gottemPrice, gottemRoute, err := b.RetrieveMinorCostRouteFromCSV(graph, "GRU", "CDG")
 	if err != nil {
 		t.Errorf("got error %v; wantted %.2f as price and %v as route", err, wantedPrice, wantedRoute)
 	}
@@ -29,13 +33,17 @@ func TestFindMinorCostRouteBetweenGRUandCDGFromCSVFile(t *testing.T) {
 func TestErrorToFindMinorCostRouteBetweenXXXandXXXFromCSVFile(t *testing.T) {
 
 	b := Business{}
-	_, _, err := b.RetrieveMinorCostRouteFromCSV("../input-routes.csv", "XXX", "CDG")
+	graph, err := b.BuildGraphFromCSV("../input-routes.csv")
+	if err != nil {
+		utils.ExitGracefully(err)
+	}
+	_, _, err = b.RetrieveMinorCostRouteFromCSV(graph, "XXX", "CDG")
 	log.Println(err)
 	if err == nil {
 		t.Errorf("it got no error; should got 'origin [XXX] or destination [CDG] is not valid' error")
 	}
 
-	_, _, err = b.RetrieveMinorCostRouteFromCSV("../input-routes.csv", "GRU", "XXX")
+	_, _, err = b.RetrieveMinorCostRouteFromCSV(graph, "GRU", "XXX")
 	log.Println(err)
 	if err == nil {
 		t.Errorf("it got no error; should got 'origin [GRU] or destination [XXX] is not valid' error")
@@ -44,7 +52,7 @@ func TestErrorToFindMinorCostRouteBetweenXXXandXXXFromCSVFile(t *testing.T) {
 
 func TestUpdateCSVfromGraph(t *testing.T) {
 
-	filepath := "../../input-routes.csv"
+	filepath := "../input-routes.csv"
 	filepath_new := "../input-routes-new.csv"
 	b := Business{}
 	graph, err := b.BuildGraphFromCSV(filepath)

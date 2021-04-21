@@ -65,3 +65,52 @@ Para uma melhor fluides da nossa conversa, atente-se aos seguintes pontos:
   * Explique as decisões de design adotadas para a solução,
   * Descreva sua APÌ Rest de forma simplificada.
 
+## Procedimento para utilizar a interface de linha de comando
+modos de execução
+### Para executar no modo padrão
+```
+go run cmd/mysolution-cli.go ./input-routes.csv
+```
+
+### O programa também funcionário em modo silencioso da seguinte maneira
+```
+go run cmd/mysolution-cli.go -s --origin GRU --destination CDG ./input-routes.csv
+```
+
+### Para acessar o help do utilitário
+```
+go run cmd/mysolution-cli.go --help
+```
+
+
+## Procedimentos para cosumir a interface REST da aplicação
+Esse API segue a espeficicação definida em arquivo ***travels-api_openapi3.yaml***
+
+Primeiramente deverá ser iniciado o serviço REST via comando:
+
+```
+go run main.go ./input-routes.csv
+```
+
+Basta escolher os seu HTTP Client preferido para interagir com a API...
+### Consulta de rota para viagem mais econômica
+exemplo: Origem aeroporto de Grarulhos [Brasil] (GRU) e Destino aeroporto Charles de Gaulle [França] (CDG)
+
+```shell
+curl --location --request GET 'http://localhost:8080/travels?origin=GRU&destination=CDG'
+```
+
+### Adicionar uma nova rota de Viagem
+exemplo: Origem aeroporto de Grarulhos [Brasil] (GRU), Destino aeroporto de Los Angeles [EUA] (LAX) e custo de 99.77 (Dolars)
+
+```shell
+curl --location --request POST 'http://localhost:8080/travels' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "origin": "GRU",
+  "destination": "LAX",
+  "cost": 99.77
+}'
+```
+
+

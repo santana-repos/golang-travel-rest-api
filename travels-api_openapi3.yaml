@@ -1,0 +1,145 @@
+openapi: 3.0.1
+info:
+  title: Travels API
+  description: >-
+    An API to help customers to organize their travels around do world.
+    
+    Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net,
+    #swagger](http://swagger.io/irc/).      For this sample, you can use the api
+    key `special-key` to test the authorization     filters.
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    email: thiagodevel@gmail.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: 'http://swagger.io'
+servers:
+  - url: 'https://localhost:8080/'
+tags:
+  - name: travel
+    description: Everything about your travels
+    externalDocs:
+      description: Find out more
+      url: 'http://swagger.io'
+paths:
+  /travels:
+    post:
+      tags:
+        - travel
+      summary: Add a new travel route
+      operationId: addNewTravelRoute
+      requestBody:
+        description: Add a new travel route
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Travel'
+        required: true
+      responses:
+        '204':
+          description: New travel route successfully added
+          content: {}
+        '405':
+          description: Invalid input
+          content: {}
+      security:
+        - petstore_auth:
+            - 'write:travel'
+            - 'read:travel'
+      x-codegen-request-body-name: body
+    get:
+      tags:
+        - travel
+      summary: Finds the minor cost travel
+      description: Finds the minor cost travel from a given origin to a detination airport code
+      operationId: RetrieveMinorCostRoute
+      parameters:
+        - name: origin
+          in: query
+          description: the international code of the departure airport. EX. GRU
+          required: true
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+        - name: destination
+          in: query
+          description: the international code of the destination airport. EX. CDG
+          required: true
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MinorCostRoute'
+        '400':
+          description: Invalid status value
+          content: {}
+      security:
+        - petstore_auth:
+            - 'write:travel'
+            - 'read:travel'
+components:
+  schemas:
+    Travel:
+      type: object
+      properties:
+        origin:
+          type: string
+          description: A given departure airport code
+          example: GRU
+        destination:
+          type: string
+          description: A given destination airport code
+          example: BRC
+        cost:
+          type: number
+          description: the trip cost for this route
+          example: 10.00
+      required:
+      - origin
+      - destination
+      - cost
+    MinorCostRoute:
+      type: object
+      properties:
+        cost:
+          type: number
+          description: trip total Cost
+          example: 40.00
+        route:
+          type: array
+          items:
+            type: string
+          example:
+          - GRU
+          - BRC
+          - SCL
+          - ORL
+          - CDG
+      required:
+      - cost
+      - route
+    
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: 'http://petstore.swagger.io/oauth/dialog'
+          scopes:
+            'write:travel': modify travels data
+            'read:travel': read travels data
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

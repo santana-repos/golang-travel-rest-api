@@ -1,13 +1,22 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
+	"travelling-routes/business"
 )
+
+/*
+	references:
+		https://github.com/Andrew4d3/go-csv2json/blob/d56cb4088a54dcfd21325d5603ce0fceaf1cff5b/csv2json.go#L80
+		https://blog.gopheracademy.com/advent-2019/flags/
+*/
 
 type inputFile struct {
 	filepath  string
@@ -37,7 +46,7 @@ best route: GRU - BRC - SCL - ORL - CDG > $40
 
 
 [silent mode]
-usage: %s -s <csvFile>
+usage: %s -s -origin <origin> -destination <destination> <csvFile>
 
 Options:
 `
@@ -57,21 +66,28 @@ func check(e error) {
 func checkIfValidFile(filename string) (bool, error) {
 	// Check if file is CSV
 	if fileExtension := filepath.Ext(filename); fileExtension != ".csv" {
-		return false, fmt.Errorf("File %s is not CSV", filename)
+		return false, fmt.Errorf("file %s is not csv", filename)
 	}
 
 	// Check if file does exist
 	if _, err := os.Stat(filename); err != nil && os.IsNotExist(err) {
-		return false, fmt.Errorf("File %s does not exist", filename)
+		return false, fmt.Errorf("file %s does not exist", filename)
 	}
 
 	return true, nil
 }
 
-func getFileData() (inputFile, error) {
+func getFileData(silentmode *bool) (inputFile, error) {
+	erromsg := "A filepath argument is required"
 	// Validate arguments
-	if len(os.Args) < 2 {
-		return inputFile{}, errors.New("A filepath argument is required")
+	if *silentmode {
+		if len(os.Args) < 7 {
+			return inputFile{}, errors.New(erromsg)
+		}
+	} else {
+		if len(os.Args) < 2 {
+			return inputFile{}, errors.New(erromsg)
+		}
 	}
 
 	separator := flag.String("separator", "comma", "Column separator")
@@ -79,10 +95,11 @@ func getFileData() (inputFile, error) {
 
 	flag.Parse()
 
-	fileLocation := flag.Arg(0)
+	fileLocation := os.Args[(len(os.Args) - 1)]
+	fmt.Println(fileLocation)
 
 	if !(*separator == "comma" || *separator == "semicolon") {
-		return inputFile{}, errors.New("Only comma or semicolon separators are allowed")
+		return inputFile{}, errors.New("only comma or semicolon separators are allowed")
 	}
 
 	return inputFile{fileLocation, *separator, *pretty}, nil
@@ -100,17 +117,17 @@ func isFlagPassed(name string) bool {
 
 func main() {
 	silentmode = flag.Bool("s", false, "activate silent mode")
+	flag.StringVar(&travel.origin, "origin", "---", "origin airport code. ex: GRU")
+	flag.StringVar(&travel.destination, "destination", "---", "destination airport code. ex: CDG")
 	flag.Usage = func() {
-		flag.StringVar(&travel.origin, "origin", travel.origin, "origin airport code. ex: GRU")
-		flag.StringVar(&travel.destination, "destination", travel.destination, "destination airport code. ex: CDG")
 		fmt.Fprintf(flag.CommandLine.Output(), usage, Version, os.Args[0], os.Args[0], os.Args[0])
 		flag.PrintDefaults()
 	}
 	flag.Parse()
 
-	log.Printf(":\tPassou flag S? %t", *silentmode)
+	fmt.Println(len(os.Args))
 
-	fileData, err := getFileData()
+	fileData, err := getFileData(silentmode)
 
 	if err != nil {
 		exitGracefully(err)
@@ -119,6 +136,34 @@ func main() {
 	if _, err := checkIfValidFile(fileData.filepath); err != nil {
 		exitGracefully(err)
 	}
+
+	var parameters string
+	if !*silentmode {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Printf("\nplease enter the route: ")
+		parameters, _ = reader.ReadString('\n')
+		separator := "-"
+		if (len(parameters) != 8) || (string(parameters[3]) != separator) {
+			exitGracefully(fmt.Errorf("invalid input parametes: %s", parameters))
+		}
+		splits := strings.Split(parameters, separator)
+		travel.origin = splits[0]
+		travel.destination = splits[1]
+	}
+
+	log.Printf("\nPassou flag S? %t", *silentmode)
+	log.Printf("\nParameters: %s", parameters)
+	log.Printf("\ntravel.origin: %s; travel.destination: %s", travel.origin, travel.destination)
+
+	b := business.Business{}
+	cost, route, err := b.RetrieveMinorCostRouteFromCSV(fileData.filepath, strings.ToUpper(travel.origin), strings.ToUpper(travel.destination))
+	if err != nil {
+		exitGracefully(err)
+	}
+
+	fmt.Printf("\nbest route: %v > $%2.f", route, cost)
+
+	log.Println()
 }
 
 /*

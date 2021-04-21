@@ -57,12 +57,6 @@ func exitGracefully(err error) {
 	os.Exit(1)
 }
 
-func check(e error) {
-	if e != nil {
-		exitGracefully(e)
-	}
-}
-
 func checkIfValidFile(filename string) (bool, error) {
 	// Check if file is CSV
 	if fileExtension := filepath.Ext(filename); fileExtension != ".csv" {
@@ -105,16 +99,6 @@ func getFileData(silentmode *bool) (inputFile, error) {
 	return inputFile{fileLocation, *separator, *pretty}, nil
 }
 
-func isFlagPassed(name string) bool {
-	found := false
-	flag.Visit(func(f *flag.Flag) {
-		if f.Name == name {
-			found = true
-		}
-	})
-	return found
-}
-
 func main() {
 	silentmode = flag.Bool("s", false, "activate silent mode")
 	flag.StringVar(&travel.origin, "origin", "---", "origin airport code. ex: GRU")
@@ -151,17 +135,23 @@ func main() {
 		travel.destination = splits[1]
 	}
 
-	log.Printf("\nPassou flag S? %t", *silentmode)
-	log.Printf("\nParameters: %s", parameters)
-	log.Printf("\ntravel.origin: %s; travel.destination: %s", travel.origin, travel.destination)
+	/*
+		log.Printf("\nPassou flag S? %t", *silentmode)
+		log.Printf("\nfilepath: %s", fileData.filepath)
+		log.Printf("\nstrings.ToUpper(travel.origin): %s", strings.ToUpper(travel.origin))
+		log.Printf("\nstrings.ToUpper(travel.destination): %s", strings.ToUpper(travel.destination))
+		log.Printf("\nParameters: %s", parameters)
+		log.Printf("\ntravel.origin: %s; travel.destination: %s", travel.origin, travel.destination)
+	*/
 
 	b := business.Business{}
-	cost, route, err := b.RetrieveMinorCostRouteFromCSV(fileData.filepath, strings.ToUpper(travel.origin), strings.ToUpper(travel.destination))
+	cost, route, err := b.RetrieveMinorCostRouteFromCSV(fileData.filepath, strings.ToUpper(travel.origin), strings.ToUpper(strings.TrimSpace(travel.destination)))
 	if err != nil {
 		exitGracefully(err)
 	}
 
-	fmt.Printf("\nbest route: %v > $%2.f", route, cost)
+	sRoute := strings.ReplaceAll(fmt.Sprintf("%v", route), " ", " - ")[1:]
+	fmt.Printf("\nbest route: %v > $%2.f\n", strings.TrimSuffix(sRoute, "]"), cost)
 
 	log.Println()
 }

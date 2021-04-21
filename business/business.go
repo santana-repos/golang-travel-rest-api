@@ -43,6 +43,14 @@ func (b Business) RetrieveMinorCostRouteFromCSV(filepath string, origin string, 
 		return 0, nil, err
 	}
 
+	/*
+		log.Printf("#%v#", graph)
+		log.Printf("#%s#", origin)
+		log.Printf("#%t#", graph.Exists(origin))
+		log.Printf("#%s#", destination)
+		log.Printf("#%t#", graph.Exists(destination))
+	*/
+
 	if (!graph.Exists(origin)) || (!graph.Exists(destination)) {
 		return 0, nil, fmt.Errorf("origin [%s] or destination [%s] is not valid", origin, destination)
 	}
